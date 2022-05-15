@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Single Album App</string>
+    <string name="play">Воспроизвести</string>
+    <string name="pause">Пауза</string>
+    <string name="artist_song">Исполнитель</string>
+    <string name="genre">Жанр</string>
+    <string name="name_album">Альбом</string>
+    <string name="next_track">Следующий</string>
+    <string name="last_track">Предыдущий</string>
+    <string name="name_song">Название песни</string>
+    <string name="time">4:32</string>
+    <string name="published">Опубликовано</string>
+</resources>

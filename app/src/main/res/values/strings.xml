@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Single Album App</string>
+    <string name="play">Play</string>
+    <string name="pause">Pause</string>
+    <string name="name_album">Name Album</string>
+    <string name="artist_song">The artist of the song</string>
+    <string name="genre">Genre</string>
+    <string name="next_track">Next track</string>
+    <string name="last_track">Last track</string>
+    <string name="name_song">Name song</string>
+    <string name="time">4:32</string>
+    <string name="published">published</string>
+</resources>
