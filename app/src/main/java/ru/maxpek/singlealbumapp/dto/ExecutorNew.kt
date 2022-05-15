@@ -1,11 +1,11 @@
 package ru.maxpek.singlealbumapp.dto
 
-data class Executor(
+data class ExecutorNew(
     val title: String,
     val artist: String,
     val published: String,
     val genre: String,
-    val tracks: List<Track>){
+    val tracks: List<Song>){
 
 
 }
