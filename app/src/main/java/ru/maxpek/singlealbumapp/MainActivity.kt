@@ -2,11 +2,14 @@ package ru.maxpek.singlealbumapp
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.widget.Button
 import androidx.activity.viewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -18,8 +21,16 @@ import ru.maxpek.singlealbumapp.viewmodel.SongViewModel
 
 
 class MainActivity : AppCompatActivity() {
+    private val mediaObserver = MediaLifecycleObserver()
     override fun onCreate(savedInstanceState: Bundle?) {
         val viewModel: SongViewModel by viewModels()
+
+
+
+
+
+
+
         viewModel.getAlbum()
         super.onCreate(savedInstanceState)
         val binding = ActivityMainBinding.inflate(layoutInflater)
@@ -27,6 +38,14 @@ class MainActivity : AppCompatActivity() {
 
         val data = viewModel.data.value
         binding.album.text = data?.title
+
+        binding.play.setOnClickListener {
+            mediaObserver.apply {
+                resources.openRawResourceFd(R.raw.ring).use { afd ->
+                    player?.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
+                }
+            }.play()
+        }
 
 //        val job = CoroutineScope.runCatching {  }
 //

@@ -16,19 +16,23 @@ class SongRepositoryImpl : SongRepository {
     }
 
 
-    override suspend fun getAlbum(): ExecutorNew {
-        val client = OkHttpClient()
-        val request = Request.Builder()
-            .url(ALBUM_URL)
-            .build()
 
+
+    override suspend fun getAlbum(): ExecutorNew {
         var executor: Executor? = null
         val data = mutableListOf<Song>()
+        val client = OkHttpClient()
+
+
+
         try {
             coroutineScope {
                 async {
+                    val request = Request.Builder()
+                        .url(ALBUM_URL)
+                        .build()
                     val response = client.newCall(request).execute()
-                    executor = (response.body?.string()) as Executor
+                    executor = (response.body.toString()) as Executor
                 }
             }.await()
         } catch (e: Exception) {

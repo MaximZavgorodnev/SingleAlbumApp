@@ -5,7 +5,7 @@ data class Executor(
     val artist: String,
     val published: String,
     val genre: String,
-    val tracks: List<Track>){
+    val tracks: List<Track>)
 
 
-}
+

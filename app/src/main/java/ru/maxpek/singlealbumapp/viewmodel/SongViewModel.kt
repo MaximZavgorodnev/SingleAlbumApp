@@ -16,7 +16,8 @@ import javax.inject.Inject
 
 
 class SongViewModel : ViewModel() {
-    private lateinit var repository: SongRepositoryImpl
+    private val repository: SongRepository = SongRepositoryImpl()
+
     val data = MutableLiveData<ExecutorNew>()
 
     fun getAlbum() {
