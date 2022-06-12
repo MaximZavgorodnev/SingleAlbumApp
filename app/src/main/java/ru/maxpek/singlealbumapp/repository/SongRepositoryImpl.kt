@@ -1,12 +1,13 @@
 package ru.maxpek.singlealbumapp.repository
 
+import com.google.gson.Gson
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import okhttp3.*
 import ru.maxpek.singlealbumapp.dto.Executor
 import ru.maxpek.singlealbumapp.dto.ExecutorNew
 import ru.maxpek.singlealbumapp.dto.Song
+import java.io.IOException
 
 
 class SongRepositoryImpl : SongRepository {
@@ -22,25 +23,35 @@ class SongRepositoryImpl : SongRepository {
         var executor: Executor? = null
         val data = mutableListOf<Song>()
         val client = OkHttpClient()
+        val gson = Gson()
 
+        val request = Request.Builder()
+            .url(ALBUM_URL)
+            .build()
+//                    val response = client.newCall(request).execute()
+//                    executor = (response.body.toString()) as Executor
 
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
 
-        try {
-            coroutineScope {
-                async {
-                    val request = Request.Builder()
-                        .url(ALBUM_URL)
-                        .build()
-                    val response = client.newCall(request).execute()
-                    executor = (response.body.toString()) as Executor
+            override fun onResponse(call: Call, response: Response) {
+                response.use {
+                    if (it.isSuccessful) {
+                        println(it.body?.string())
+                        executor = gson.fromJson(it.body?.string(), Executor::class.java)
+                        if (executor != null) {
+                            data.addAll(fromDto(executor!!))
+                        }
+                    }
+
+                    println(executor)
                 }
-            }.await()
-        } catch (e: Exception) {
-        }
+            }
+        })
 
-        if (executor != null) {
-            data.addAll(fromDto(executor!!))
-        }
+
         return ExecutorNew(
             executor!!.title,
             executor!!.artist,
@@ -57,3 +68,5 @@ class SongRepositoryImpl : SongRepository {
     }
 
 }
+
+

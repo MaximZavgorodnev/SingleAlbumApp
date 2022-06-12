@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import ru.maxpek.singlealbumapp.dto.ExecutorNew
 import ru.maxpek.singlealbumapp.repository.SongRepository
 import ru.maxpek.singlealbumapp.repository.SongRepositoryImpl
+import java.util.concurrent.Flow
 import javax.inject.Inject
 
 
@@ -20,11 +21,14 @@ class SongViewModel : ViewModel() {
 
     val data = MutableLiveData<ExecutorNew>()
 
+
     fun getAlbum() {
         viewModelScope.launch {
             try {
                 data.value = repository.getAlbum()
-            } catch (e: Exception) { }
+            } catch (e: Exception) {
+                println("ERORR")
+            }
         }
     }
 
