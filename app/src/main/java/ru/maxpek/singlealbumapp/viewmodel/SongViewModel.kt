@@ -19,13 +19,14 @@ import javax.inject.Inject
 class SongViewModel : ViewModel() {
     private val repository: SongRepository = SongRepositoryImpl()
 
-    val data = MutableLiveData<ExecutorNew>()
+    val data: MutableLiveData<ExecutorNew> = repository.dataExecutorNew
+//    val data1: kotlinx.coroutines.flow.Flow<ExecutorNew> = ExecutorNew()
 
 
     fun getAlbum() {
         viewModelScope.launch {
             try {
-                data.value = repository.getAlbum()
+                repository.getAlbum()
             } catch (e: Exception) {
                 println("ERORR")
             }

@@ -1,8 +1,14 @@
 package ru.maxpek.singlealbumapp.repository
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.google.gson.Gson
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
 import okhttp3.*
 import ru.maxpek.singlealbumapp.dto.Executor
 import ru.maxpek.singlealbumapp.dto.ExecutorNew
@@ -16,20 +22,23 @@ class SongRepositoryImpl : SongRepository {
         private const val BASE_URL = "https://raw.githubusercontent.com/netology-code/andad-homeworks/master/09_multimedia/data/"
     }
 
+    var executorNew: ExecutorNew? = null
+    override val dataExecutorNew: MutableLiveData<ExecutorNew> =  MutableLiveData(executorNew)
 
 
 
-    override suspend fun getAlbum(): ExecutorNew {
-        var executor: Executor? = null
+    override suspend fun getAlbum(){
+
+        var executor: Executor?
         val data = mutableListOf<Song>()
         val client = OkHttpClient()
         val gson = Gson()
 
+
+
         val request = Request.Builder()
             .url(ALBUM_URL)
             .build()
-//                    val response = client.newCall(request).execute()
-//                    executor = (response.body.toString()) as Executor
 
         client.newCall(request).enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
@@ -39,26 +48,26 @@ class SongRepositoryImpl : SongRepository {
             override fun onResponse(call: Call, response: Response) {
                 response.use {
                     if (it.isSuccessful) {
-                        println(it.body?.string())
                         executor = gson.fromJson(it.body?.string(), Executor::class.java)
                         if (executor != null) {
                             data.addAll(fromDto(executor!!))
+                            executorNew = ExecutorNew(
+                                executor!!.title,
+                                executor!!.subtitle,
+                                executor!!.artist,
+                                executor!!.published,
+                                executor!!.genre,
+                                data
+                            )
+                            dataExecutorNew.postValue(executorNew)
                         }
                     }
-
-                    println(executor)
                 }
             }
+
         })
 
 
-        return ExecutorNew(
-            executor!!.title,
-            executor!!.artist,
-            executor!!.published,
-            executor!!.genre,
-            data
-        )
     }
 
     private fun fromDto(executor: Executor) = with(executor.tracks) {
@@ -66,6 +75,7 @@ class SongRepositoryImpl : SongRepository {
             Song(it.id, false, executor.artist, it.file, BASE_URL+it.file, "4:24")
         }
     }
+
 
 }
 

@@ -121,12 +121,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginBottom="24dp" />
 
+        <SeekBar
+            android:id="@+id/positionBar"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf = "@id/genre"
+            android:layout_marginBottom="@dimen/common_spacing"
+            tools:ignore="MissingConstraints" />
+
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="published, last, play, next" />
+            app:constraint_referenced_ids="positionBar" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list"

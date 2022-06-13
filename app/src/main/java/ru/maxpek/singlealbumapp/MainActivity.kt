@@ -7,10 +7,7 @@ import android.widget.Button
 import androidx.activity.viewModels
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -18,6 +15,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import ru.maxpek.singlealbumapp.adapter.AdapterCallback
+import ru.maxpek.singlealbumapp.adapter.SongAdapter
 
 import ru.maxpek.singlealbumapp.databinding.ActivityMainBinding
 import ru.maxpek.singlealbumapp.dto.ExecutorNew
@@ -29,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val viewModel: SongViewModel by viewModels()
 
+        val adapter = SongAdapter (object : AdapterCallback {})
 
 
         viewModel.getAlbum()
@@ -37,10 +37,20 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 //        val data = viewModel.data.value
-        viewModel.data.observeForever {
+        binding.list.adapter = adapter
+        viewModel.data.observeForever{
             if (it != null){
                 binding.progress.visibility = View.GONE
-                binding.album.text = it.title
+                binding.nameAlbum.text = it.title
+                binding.nameActor.text = it.artist
+                binding.published.text = it.published
+                binding.genre.text = it.genre
+                val newMarker = adapter.itemCount < it.tracks.size
+                adapter.submitList(it.tracks) {
+                    if (newMarker) {
+                        binding.list.smoothScrollToPosition(0)
+                    }
+                }
             }
 
         }
@@ -54,19 +64,6 @@ class MainActivity : AppCompatActivity() {
             }.play()
         }
 
-//        val job = CoroutineScope.runCatching {  }
-//
-//
 
-//        coroutineScope {
-//            async {
-//
-//                        try {
-//                            data.value = repository.getAlbum()
-//                        } catch (e: Exception) { }
-//                    }
-//                }
-//
-//
     }
 }
