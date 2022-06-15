@@ -20,6 +20,7 @@ import ru.maxpek.singlealbumapp.adapter.SongAdapter
 
 import ru.maxpek.singlealbumapp.databinding.ActivityMainBinding
 import ru.maxpek.singlealbumapp.dto.ExecutorNew
+import ru.maxpek.singlealbumapp.dto.Song
 import ru.maxpek.singlealbumapp.viewmodel.SongViewModel
 
 
@@ -27,8 +28,26 @@ class MainActivity : AppCompatActivity() {
     private val mediaObserver = MediaLifecycleObserver()
     override fun onCreate(savedInstanceState: Bundle?) {
         val viewModel: SongViewModel by viewModels()
+        lifecycle.addObserver(mediaObserver)
 
-        val adapter = SongAdapter (object : AdapterCallback {})
+
+        val adapter = SongAdapter (object : AdapterCallback {
+            override fun onPlay(song: Song) {
+                if (mediaObserver.player?.isPlaying!!){
+                    mediaObserver.player!!.reset()
+                }
+                if (!song.reproduced) {
+                    mediaObserver.apply {
+                        player?.setDataSource(
+                            song.url
+                        )
+                    }.play()
+                    viewModel.onPlay(song)
+                } else {
+                    mediaObserver.onStateChanged(this@MainActivity, Lifecycle.Event.ON_PAUSE)
+                }
+            }
+        })
 
 
         viewModel.getAlbum()
@@ -45,17 +64,15 @@ class MainActivity : AppCompatActivity() {
                 binding.nameActor.text = it.artist
                 binding.published.text = it.published
                 binding.genre.text = it.genre
-                val newMarker = adapter.itemCount < it.tracks.size
+                val track = adapter.itemCount < it.tracks.size
                 adapter.submitList(it.tracks) {
-                    if (newMarker) {
+                    if (track) {
                         binding.list.smoothScrollToPosition(0)
                     }
                 }
             }
 
         }
-//        binding.album.text = data?.title
-
         binding.play.setOnClickListener {
             mediaObserver.apply {
                 resources.openRawResourceFd(R.raw.ring).use { afd ->

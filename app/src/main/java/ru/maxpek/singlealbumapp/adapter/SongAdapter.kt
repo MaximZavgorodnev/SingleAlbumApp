@@ -9,7 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import ru.maxpek.singlealbumapp.databinding.CompositionCardBinding
 import ru.maxpek.singlealbumapp.dto.Song
 
-interface AdapterCallback {}
+interface AdapterCallback {
+   fun onPlay(song: Song)
+}
 
 class SongAdapter (private val callback: AdapterCallback) :
     ListAdapter<Song, SongViewHolder>(MarkerDiffCallback()) {
@@ -36,6 +38,9 @@ class SongViewHolder
             title.text = song.file
             play.isChecked = song.reproduced
             time.text = song.timeSong
+            play.setOnClickListener {
+               callback.onPlay(song)
+            }
         }
     }
 }

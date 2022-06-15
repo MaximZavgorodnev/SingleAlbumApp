@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
+import ru.maxpek.singlealbumapp.MediaLifecycleObserver
 import ru.maxpek.singlealbumapp.dto.ExecutorNew
 import ru.maxpek.singlealbumapp.repository.SongRepository
 import ru.maxpek.singlealbumapp.repository.SongRepositoryImpl
@@ -31,6 +32,10 @@ class SongViewModel : ViewModel() {
                 println("ERORR")
             }
         }
+    }
+
+    fun onPlay(){
+
     }
 
 
