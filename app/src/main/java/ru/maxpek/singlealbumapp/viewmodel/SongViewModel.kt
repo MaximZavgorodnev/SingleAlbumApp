@@ -10,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import ru.maxpek.singlealbumapp.MediaLifecycleObserver
 import ru.maxpek.singlealbumapp.dto.ExecutorNew
+import ru.maxpek.singlealbumapp.dto.Song
 import ru.maxpek.singlealbumapp.repository.SongRepository
 import ru.maxpek.singlealbumapp.repository.SongRepositoryImpl
 import java.util.concurrent.Flow
@@ -21,8 +22,7 @@ class SongViewModel : ViewModel() {
     private val repository: SongRepository = SongRepositoryImpl()
 
     val data: MutableLiveData<ExecutorNew> = repository.dataExecutorNew
-//    val data1: kotlinx.coroutines.flow.Flow<ExecutorNew> = ExecutorNew()
-
+    var idOfPlayedTrack = 0L
 
     fun getAlbum() {
         viewModelScope.launch {
@@ -34,8 +34,21 @@ class SongViewModel : ViewModel() {
         }
     }
 
-    fun onPlay(){
-
+    fun onPlay(song: Song) {
+        val tracks = data.value?.tracks.apply {
+            this?.forEach {
+                if(it.id == song.id){
+                    it.reproduced = !it.reproduced
+                } else {
+                    it.reproduced = false
+                }
+            }
+        }
+        data.value = tracks?.let {
+            data.value?.copy(
+                tracks = it
+            )
+        }
     }
 
 

@@ -106,6 +106,7 @@
             style="@style/Widget.AppTheme.IconButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:checkable="true"
             app:icon="@drawable/ic_play_pause_circle_24"
             app:layout_constraintTop_toBottomOf="@id/name_actor"
             app:layout_constraintEnd_toStartOf="@+id/next"

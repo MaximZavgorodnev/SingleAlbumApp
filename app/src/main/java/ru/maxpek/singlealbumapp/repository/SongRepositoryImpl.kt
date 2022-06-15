@@ -27,15 +27,13 @@ class SongRepositoryImpl : SongRepository {
 
 
 
-    override suspend fun getAlbum(){
 
+
+    override suspend fun getAlbum() {
         var executor: Executor?
         val data = mutableListOf<Song>()
         val client = OkHttpClient()
         val gson = Gson()
-
-
-
         val request = Request.Builder()
             .url(ALBUM_URL)
             .build()
@@ -66,9 +64,8 @@ class SongRepositoryImpl : SongRepository {
             }
 
         })
-
-
     }
+
 
     private fun fromDto(executor: Executor) = with(executor.tracks) {
         this.map {

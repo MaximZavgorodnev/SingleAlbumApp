@@ -34,6 +34,7 @@ class SongViewHolder
 
     fun bind(song: Song) {
         binding.apply {
+            play.isChecked = false
             artist.text = song.author
             title.text = song.file
             play.isChecked = song.reproduced
