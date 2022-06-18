@@ -87,9 +87,8 @@
             android:text="@string/genre"
             android:layout_marginTop="@dimen/common_spacing"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
-            app:layout_constraintStart_toEndOf="@id/published"
-            app:layout_constraintTop_toBottomOf="@id/name_actor"
-            app:layout_constraintVertical_chainStyle="packed" />
+            app:layout_constraintStart_toEndOf="@id/album"
+            tools:ignore="MissingConstraints" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/last"
@@ -126,7 +125,7 @@
             android:id="@+id/positionBar"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf = "@id/genre"
+            app:layout_constraintTop_toBottomOf = "@id/published"
             android:layout_marginBottom="@dimen/common_spacing"
             tools:ignore="MissingConstraints" />
 
@@ -141,7 +140,7 @@
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="156dp"
+            android:layout_marginTop="165dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
