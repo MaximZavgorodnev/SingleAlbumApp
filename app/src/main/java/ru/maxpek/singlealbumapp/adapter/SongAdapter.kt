@@ -11,6 +11,7 @@ import ru.maxpek.singlealbumapp.dto.Song
 
 interface AdapterCallback {
    fun onPlay(song: Song)
+   fun onPause()
 }
 
 class SongAdapter (private val callback: AdapterCallback) :
@@ -40,7 +41,7 @@ class SongViewHolder
             play.isChecked = song.reproduced
             time.text = song.timeSong
             play.setOnClickListener {
-               callback.onPlay(song)
+                if (play.isChecked) callback.onPlay(song) else callback.onPause()
             }
         }
     }

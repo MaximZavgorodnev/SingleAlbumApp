@@ -1,29 +1,32 @@
 package ru.maxpek.singlealbumapp.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import androidx.lifecycle.*
 import kotlinx.coroutines.launch
-import ru.maxpek.singlealbumapp.MediaLifecycleObserver
 import ru.maxpek.singlealbumapp.dto.ExecutorNew
 import ru.maxpek.singlealbumapp.dto.Song
+import ru.maxpek.singlealbumapp.model.FeedModelState
 import ru.maxpek.singlealbumapp.repository.SongRepository
 import ru.maxpek.singlealbumapp.repository.SongRepositoryImpl
-import java.util.concurrent.Flow
-import javax.inject.Inject
-
 
 
 class SongViewModel : ViewModel() {
     private val repository: SongRepository = SongRepositoryImpl()
+    private val empty = Song(
+        id = 0,
+        reproduced = false,
+        author = "",
+        file = "",
+        url = "",
+        timeSong = "")
+
 
     val data: MutableLiveData<ExecutorNew> = repository.dataExecutorNew
-    var idOfPlayedTrack = 0L
-
+    private val _currentSong = MutableLiveData(empty)
+    val currentSong : LiveData<Song>
+        get() = _currentSong
+    private val _dataState = MutableLiveData<FeedModelState>()
+    val dataState: LiveData<FeedModelState>
+        get() = _dataState
     fun getAlbum() {
         viewModelScope.launch {
             try {
@@ -35,13 +38,13 @@ class SongViewModel : ViewModel() {
     }
 
     fun onPlay(song: Song) {
+        _dataState.value = FeedModelState(play = true)
+        if (!songComparison(song)) {
+            _currentSong.value = song
+        }
         val tracks = data.value?.tracks.apply {
             this?.forEach {
-                if(it.id == song.id){
-                    it.reproduced = !it.reproduced
-                } else {
-                    it.reproduced = false
-                }
+                it.reproduced = it.id == song.id
             }
         }
         data.value = tracks?.let {
@@ -49,6 +52,28 @@ class SongViewModel : ViewModel() {
                 tracks = it
             )
         }
+    }
+
+    fun onPause() {
+        _dataState.value = FeedModelState(play = false)
+        val tracks = data.value?.tracks.apply {
+            this?.forEach {
+                    it.reproduced = false
+            }
+        }
+        data.value = tracks?.let {
+            data.value?.copy(
+                tracks = it
+            )
+        }
+    }
+
+    fun playerJob(): Boolean {
+        return _currentSong.value?.id != 0L
+    }
+
+    fun songComparison(song: Song): Boolean {
+        return _currentSong.value?.id == song.id
     }
 
 

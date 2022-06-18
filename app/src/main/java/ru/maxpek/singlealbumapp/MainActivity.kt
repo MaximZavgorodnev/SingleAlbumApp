@@ -28,34 +28,28 @@ class MainActivity : AppCompatActivity() {
     private val mediaObserver = MediaLifecycleObserver()
     override fun onCreate(savedInstanceState: Bundle?) {
         val viewModel: SongViewModel by viewModels()
-        var idOfPlayedTrack = 0L
         lifecycle.addObserver(mediaObserver)
         val binding = ActivityMainBinding.inflate(layoutInflater)
 
 
         val adapter = SongAdapter (object : AdapterCallback {
             override fun onPlay(song: Song) {
-                if (song.id != idOfPlayedTrack) {
+                if (!viewModel.songComparison(song)) {
                     mediaObserver.player!!.reset()
                     mediaObserver.apply {
                         player?.setDataSource(
                             song.url
                         )
                     }.play()
-                    idOfPlayedTrack = song.id
                     viewModel.onPlay(song)
-                    binding.play.isChecked = true
                 } else {
-                    if (!song.reproduced) {
                         mediaObserver.player!!.start()
                         viewModel.onPlay(song)
-                        binding.play.isChecked = true
-                    } else {
-                        mediaObserver.onStateChanged(this@MainActivity, Lifecycle.Event.ON_PAUSE)
-                        viewModel.onPlay(song)
-                        binding.play.isChecked = false
-                    }
                 }
+            }
+            override fun onPause() {
+                mediaObserver.onStateChanged(this@MainActivity, Lifecycle.Event.ON_PAUSE)
+                viewModel.onPause()
             }
         })
 
@@ -73,42 +67,67 @@ class MainActivity : AppCompatActivity() {
                 binding.nameActor.text = it.artist
                 binding.published.text = it.published
                 binding.genre.text = it.genre
-
                 adapter.submitList(it.tracks)
             }
 
         }
+        viewModel.dataState.observe(this@MainActivity){
+            binding.play.isChecked = it.play
+        }
         binding.play.setOnClickListener {
-            val song = viewModel.data.value!!.tracks[idOfPlayedTrack.toInt()]
-
-            if (!binding.play.isChecked){
-                mediaObserver.onStateChanged(this@MainActivity, Lifecycle.Event.ON_PAUSE)
-                viewModel.onPlay(song)
-                binding.play.isChecked = false
+            val song = if (!viewModel.playerJob()) {
+                viewModel.data.value!!.tracks[0]
             } else {
-                if (song.reproduced) {
-                    mediaObserver.player!!.start()
-                    viewModel.onPlay(song)
-                    binding.play.isChecked = true
-                } else {
+                viewModel.currentSong.value!!
+            }
+            if (binding.play.isChecked) {
+                if (!viewModel.songComparison(song)) {
+                    mediaObserver.player!!.reset()
                     mediaObserver.apply {
                         player?.setDataSource(
                             song.url
                         )
                     }.play()
                     viewModel.onPlay(song)
-                    binding.play.isChecked = true
+                } else {
+                    mediaObserver.player!!.start()
+                    viewModel.onPlay(song)
                 }
+            } else {
+                mediaObserver.onStateChanged(this@MainActivity, Lifecycle.Event.ON_PAUSE)
+                viewModel.onPause()
             }
 
         }
 
         binding.last.setOnClickListener {
-
+            if (viewModel.playerJob()) {
+                val size = viewModel.data.value!!.tracks.size
+                val lastId = viewModel.currentSong.value!!.id - 2
+                val song = if (lastId < 0) viewModel.data.value!!.tracks[size-1] else viewModel.data.value!!.tracks[lastId.toInt()]
+                mediaObserver.player!!.reset()
+                mediaObserver.apply {
+                    player?.setDataSource(
+                        song.url
+                    )
+                }.play()
+                viewModel.onPlay(song)
+            }
         }
 
         binding.next.setOnClickListener {
-
+            if (viewModel.playerJob()) {
+                val size = viewModel.data.value!!.tracks.size
+                val nextId = viewModel.currentSong.value!!.id
+                val song = if (nextId < size) viewModel.data.value!!.tracks[nextId.toInt()] else viewModel.data.value!!.tracks[0]
+                mediaObserver.player!!.reset()
+                mediaObserver.apply {
+                    player?.setDataSource(
+                        song.url
+                    )
+                }.play()
+                viewModel.onPlay(song)
+            }
         }
 
 
