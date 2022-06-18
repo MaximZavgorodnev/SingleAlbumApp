@@ -39,7 +39,6 @@ class SongViewHolder
             artist.text = song.author
             title.text = song.file
             play.isChecked = song.reproduced
-            time.text = song.timeSong
             play.setOnClickListener {
                 if (play.isChecked) callback.onPlay(song) else callback.onPause()
             }

@@ -137,7 +137,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf= "@id/published"
             app:layout_constraintTop_toBottomOf = "@id/published"
-            tools:ignore="MissingConstraints" />
+            />
 
         <TextView
             android:id="@+id/timeStart"
@@ -145,6 +145,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/common_spacing"
             android:text="@string/start_time"
+            android:visibility="gone"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/positionBar"
@@ -155,6 +156,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/common_spacing"
             android:text="@string/over_time"
+            android:visibility="gone"
             android:textAppearance="@style/TextAppearance.AppCompat.Body2"
             app:layout_constraintEnd_toEndOf="@id/positionBar"
             app:layout_constraintTop_toBottomOf="@id/positionBar"

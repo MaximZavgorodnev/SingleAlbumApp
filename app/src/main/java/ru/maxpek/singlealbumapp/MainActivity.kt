@@ -1,9 +1,13 @@
 package ru.maxpek.singlealbumapp
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.view.View
 import android.widget.Button
+import android.widget.SeekBar
 import androidx.activity.viewModels
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
@@ -32,10 +36,12 @@ class MainActivity : AppCompatActivity() {
         val binding = ActivityMainBinding.inflate(layoutInflater)
 
 
+
+
         val adapter = SongAdapter (object : AdapterCallback {
             override fun onPlay(song: Song) {
                 if (!viewModel.songComparison(song)) {
-                    mediaObserver.player!!.reset()
+                    mediaObserver.onStateChanged(this@MainActivity, Lifecycle.Event.ON_STOP)
                     mediaObserver.apply {
                         player?.setDataSource(
                             song.url
@@ -73,6 +79,9 @@ class MainActivity : AppCompatActivity() {
         }
         viewModel.dataState.observe(this@MainActivity){
             binding.play.isChecked = it.play
+            binding.overStart.visibility = View.VISIBLE
+            binding.timeStart.visibility = View.VISIBLE
+            binding.positionBar.max = mediaObserver.whatTotalTime()
         }
         binding.play.setOnClickListener {
             val song = if (!viewModel.playerJob()) {
@@ -82,7 +91,7 @@ class MainActivity : AppCompatActivity() {
             }
             if (binding.play.isChecked) {
                 if (!viewModel.songComparison(song)) {
-                    mediaObserver.player!!.reset()
+                    mediaObserver.onStateChanged(this@MainActivity, Lifecycle.Event.ON_STOP)
                     mediaObserver.apply {
                         player?.setDataSource(
                             song.url
@@ -130,9 +139,77 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        binding.stop.setOnClickListener {
+            mediaObserver.onStateChanged(this@MainActivity, Lifecycle.Event.ON_STOP)
+            viewModel.onStop()
+            binding.overStart.visibility = View.GONE
+            binding.timeStart.visibility = View.GONE
+        }
+
+
+        binding.positionBar.setOnSeekBarChangeListener(
+            object : SeekBar.OnSeekBarChangeListener {
+                override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                    if (fromUser) {
+                        mediaObserver.player?.seekTo(progress)
+                    }
+                }
+                override fun onStartTrackingTouch(p0: SeekBar?) {
+                }
+                override fun onStopTrackingTouch(p0: SeekBar?) {
+                }
+            }
+        )
+
+        @SuppressLint("HandlerLeak")
+        var handler = object : Handler() {
+            @SuppressLint("SetTextI18n")
+            override fun handleMessage(msg: Message) {
+                var currentPosition = msg.what
+
+                // Update positionBar
+                binding.positionBar.progress = currentPosition
+                // Update Labels
+                var elapsedTime = createTimeLabel(currentPosition)
+                binding.timeStart.text = elapsedTime
+
+                var remainingTime = createTimeLabel(mediaObserver.whatTotalTime() - currentPosition)
+                binding.overStart.text = "-$remainingTime"
+            }
+        }
+
+        // Thread
+        Thread(Runnable {
+            while (mediaObserver.player != null) {
+                try {
+                    var msg = Message()
+                    msg.what = mediaObserver.player!!.currentPosition
+                    handler.sendMessage(msg)
+                    Thread.sleep(1000)
+                } catch (e: InterruptedException) {
+                }
+            }
+        }).start()
 
 
 
+
+
+
+    }
+
+
+
+    fun createTimeLabel(time: Int): String {
+        var timeLabel = ""
+        var min = time / 1000 / 60
+        var sec = time / 1000 % 60
+
+        timeLabel = "$min:"
+        if (sec < 10) timeLabel += "0"
+        timeLabel += sec
+
+        return timeLabel
     }
 
 

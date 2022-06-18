@@ -68,6 +68,21 @@ class SongViewModel : ViewModel() {
         }
     }
 
+    fun onStop() {
+        _dataState.value = FeedModelState(play = false)
+        val tracks = data.value?.tracks.apply {
+            this?.forEach {
+                it.reproduced = false
+            }
+        }
+        data.value = tracks?.let {
+            data.value?.copy(
+                tracks = it
+            )
+        }
+        _currentSong.value = empty
+    }
+
     fun playerJob(): Boolean {
         return _currentSong.value?.id != 0L
     }
