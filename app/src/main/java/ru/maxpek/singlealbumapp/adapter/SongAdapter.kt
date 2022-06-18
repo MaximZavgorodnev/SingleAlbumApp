@@ -23,8 +23,8 @@ class SongAdapter (private val callback: AdapterCallback) :
     }
 
     override fun onBindViewHolder(holder: SongViewHolder, position: Int) {
-        val post = getItem(position)
-        holder.bind(post)
+        val song = getItem(position)
+        holder.bind(song)
     }
 
 }

@@ -34,7 +34,20 @@ class MainActivity : AppCompatActivity() {
         val viewModel: SongViewModel by viewModels()
         lifecycle.addObserver(mediaObserver)
         val binding = ActivityMainBinding.inflate(layoutInflater)
-
+        mediaObserver.player?.setOnCompletionListener {
+            if (viewModel.playerJob()) {
+                val size = viewModel.data.value!!.tracks.size
+                val nextId = viewModel.currentSong.value!!.id
+                val song = if (nextId < size) viewModel.data.value!!.tracks[nextId.toInt()] else viewModel.data.value!!.tracks[0]
+                mediaObserver.player!!.reset()
+                mediaObserver.apply {
+                    player?.setDataSource(
+                        song.url
+                    )
+                }.play()
+                viewModel.onPlay(song)
+            }
+        }
 
 
 
@@ -63,17 +76,17 @@ class MainActivity : AppCompatActivity() {
         viewModel.getAlbum()
         super.onCreate(savedInstanceState)
 
-        setContentView(binding.root)
+
 
         binding.list.adapter = adapter
         viewModel.data.observe(this@MainActivity){
             if (it != null){
+                adapter.submitList(it.tracks)
                 binding.progress.visibility = View.GONE
                 binding.nameAlbum.text = it.title
                 binding.nameActor.text = it.artist
                 binding.published.text = it.published
                 binding.genre.text = it.genre
-                adapter.submitList(it.tracks)
             }
 
         }
@@ -145,6 +158,7 @@ class MainActivity : AppCompatActivity() {
             binding.overStart.visibility = View.GONE
             binding.timeStart.visibility = View.GONE
         }
+        setContentView(binding.root)
 
 
         binding.positionBar.setOnSeekBarChangeListener(

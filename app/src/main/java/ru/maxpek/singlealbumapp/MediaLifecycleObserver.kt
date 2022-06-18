@@ -11,7 +11,7 @@ class MediaLifecycleObserver : LifecycleEventObserver {
         player?.setOnPreparedListener {
             it.start()
         }
-        player?.isLooping = true
+        player?.isLooping = false
         player?.prepare()
     }
 
