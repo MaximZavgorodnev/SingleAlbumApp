@@ -108,7 +108,7 @@
             android:checkable="true"
             app:icon="@drawable/ic_play_pause_circle_24"
             app:layout_constraintTop_toBottomOf="@id/name_actor"
-            app:layout_constraintEnd_toStartOf="@+id/next"
+            app:layout_constraintEnd_toStartOf="@+id/stop"
             android:layout_marginBottom="24dp" />
 
         <com.google.android.material.button.MaterialButton
@@ -121,26 +121,57 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginBottom="24dp" />
 
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/stop"
+            style="@style/Widget.AppTheme.IconButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:icon="@drawable/ic_stop_circle_24"
+            app:layout_constraintTop_toBottomOf="@id/name_actor"
+            app:layout_constraintEnd_toStartOf="@+id/next"
+            android:layout_marginBottom="24dp" />
+
         <SeekBar
             android:id="@+id/positionBar"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf= "@id/published"
             app:layout_constraintTop_toBottomOf = "@id/published"
-            android:layout_marginBottom="@dimen/common_spacing"
             tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/timeStart"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/common_spacing"
+            android:text="@string/start_time"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/positionBar"
+            app:layout_constraintVertical_chainStyle="packed" />
+        <TextView
+            android:id="@+id/overStart"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/common_spacing"
+            android:text="@string/over_time"
+            android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+            app:layout_constraintEnd_toEndOf="@id/positionBar"
+            app:layout_constraintTop_toBottomOf="@id/positionBar"
+            app:layout_constraintVertical_chainStyle="packed" />
 
         <androidx.constraintlayout.widget.Barrier
             android:id="@+id/header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:barrierDirection="bottom"
-            app:constraint_referenced_ids="positionBar" />
+            app:constraint_referenced_ids="timeStart" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="165dp"
+            android:layout_marginTop="185dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

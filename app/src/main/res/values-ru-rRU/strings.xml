@@ -11,4 +11,6 @@
     <string name="name_song">Название песни</string>
     <string name="time">4:32</string>
     <string name="published">Опубликовано</string>
+    <string name="start_time">0:00</string>
+    <string name="over_time">4:24</string>
 </resources>
