@@ -9,6 +9,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.SeekBar
 import androidx.activity.viewModels
+import androidx.core.view.get
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.lifecycle.*
@@ -30,6 +31,7 @@ import ru.maxpek.singlealbumapp.viewmodel.SongViewModel
 
 class MainActivity : AppCompatActivity() {
     private val mediaObserver = MediaLifecycleObserver()
+    @SuppressLint("NotifyDataSetChanged")
     override fun onCreate(savedInstanceState: Bundle?) {
         val viewModel: SongViewModel by viewModels()
         lifecycle.addObserver(mediaObserver)
@@ -78,15 +80,21 @@ class MainActivity : AppCompatActivity() {
 
 
 
+
         binding.list.adapter = adapter
+
+
+
         viewModel.data.observe(this@MainActivity){
             if (it != null){
                 adapter.submitList(it.tracks)
+                adapter.notifyDataSetChanged()
                 binding.progress.visibility = View.GONE
                 binding.nameAlbum.text = it.title
                 binding.nameActor.text = it.artist
                 binding.published.text = it.published
                 binding.genre.text = it.genre
+
             }
 
         }
@@ -119,7 +127,6 @@ class MainActivity : AppCompatActivity() {
                 mediaObserver.onStateChanged(this@MainActivity, Lifecycle.Event.ON_PAUSE)
                 viewModel.onPause()
             }
-
         }
 
         binding.last.setOnClickListener {
